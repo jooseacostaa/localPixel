@@ -1,12 +1,42 @@
+import Link from "next/link";
+
+const sections = [
+  {
+    href: "/paginas",
+    title: "Mis páginas",
+    description: "Consulta tus páginas web.",
+  },
+  {
+    href: "/comprar",
+    title: "Comprar página",
+    description: "Prepara un nuevo pedido.",
+  },
+  {
+    href: "/configuracion",
+    title: "Configuración",
+    description: "Ajusta las preferencias de la aplicación.",
+  },
+];
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <section className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-8 shadow-sm sm:p-12" aria-labelledby="title">
-        <p className="mb-6 text-sm font-semibold tracking-widest text-blue-600">LOCALPIXEL</p>
-        <h1 id="title" className="text-4xl font-bold tracking-tight text-slate-900">Tu próximo proyecto empieza aquí.</h1>
-        <p className="mt-5 leading-7 text-slate-600">La base de LocalPixel está lista. En la siguiente etapa añadiremos la navegación y los componentes de tu panel.</p>
-        <p className="mt-8 rounded-xl bg-blue-50 p-4 text-sm text-blue-800">Etapa 1 · Next.js, React, Tailwind y TypeScript</p>
-      </section>
-    </main>
+    <>
+      <h1>Panel de control</h1>
+      <p className="mt-3 text-slate-600">
+        Bienvenido a LocalPixel. Elige una sección para continuar.
+      </p>
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {sections.map(({ href, title, description }) => (
+          <Link
+            key={href}
+            href={href}
+            className="rounded-2xl border border-slate-200 bg-white p-6 hover:border-blue-600"
+          >
+            <h2 className="text-xl font-semibold text-blue-700">{title}</h2>
+            <p className="mt-2 text-slate-600">{description}</p>
+          </Link>
+        ))}
+      </div>
+    </>
   );
 }

@@ -3,3 +3,6 @@
 :root { color-scheme: light; }
 body { margin: 0; background: #f8fafc; color: #17233d; font-family: Arial, Helvetica, sans-serif; }
 *:focus-visible { outline: 3px solid #2563eb; outline-offset: 4px; }
+h1 { font-size: 2rem; font-weight: 700; line-height: 1.2; }
+.skip-link { position: absolute; top: 0; left: 1rem; transform: translateY(-150%); padding: 1rem; background: #fff; color: #17233d; z-index: 10; }
+.skip-link:focus { transform: translateY(0); }
