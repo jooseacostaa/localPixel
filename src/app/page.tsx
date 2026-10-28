@@ -35,20 +35,24 @@ export default function Home() {
   return (
     <>
       <h1>Panel de control</h1>
-      <p className="mt-3 text-slate-600">
+      <p className="mt-3 text-slate-600 dark:text-slate-300">
         Bienvenido a LocalPixel. Gestiona tus páginas web y pedidos desde aquí.
       </p>
-      <p className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+      <p className="mt-4 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 p-4 text-sm text-blue-900 dark:text-blue-100">
         Vista de demostración: las cifras y la actividad son datos de ejemplo.
       </p>
 
       <dl className="mt-8 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6">
-          <dt className="text-sm text-slate-600">Páginas activas</dt>
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
+          <dt className="text-sm text-slate-600 dark:text-slate-300">
+            Páginas activas
+          </dt>
           <dd className="mt-2 text-3xl font-bold">12</dd>
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-6">
-          <dt className="text-sm text-slate-600">Pedidos pendientes</dt>
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
+          <dt className="text-sm text-slate-600 dark:text-slate-300">
+            Pedidos pendientes
+          </dt>
           <dd className="mt-2 text-3xl font-bold">3</dd>
         </div>
       </dl>
@@ -62,10 +66,14 @@ export default function Home() {
             <Link
               key={href}
               href={href}
-              className="rounded-2xl border border-slate-200 bg-white p-6 hover:border-blue-600"
+              className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 hover:border-blue-600"
             >
-              <h3 className="text-lg font-semibold text-blue-700">{title}</h3>
-              <p className="mt-2 text-slate-600">{description}</p>
+              <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-300">
+                {title}
+              </h3>
+              <p className="mt-2 text-slate-600 dark:text-slate-300">
+                {description}
+              </p>
             </Link>
           ))}
         </div>
@@ -79,13 +87,17 @@ export default function Home() {
           {activity.map(({ title, description, date }) => (
             <li
               key={title}
-              className="rounded-2xl border border-slate-200 bg-white p-5 sm:flex sm:items-center sm:justify-between sm:gap-4"
+              className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 sm:flex sm:items-center sm:justify-between sm:gap-4"
             >
               <div>
                 <h3 className="font-semibold">{title}</h3>
-                <p className="mt-1 text-sm text-slate-600">{description}</p>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                  {description}
+                </p>
               </div>
-              <p className="mt-2 text-sm text-slate-600 sm:mt-0">{date}</p>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 sm:mt-0">
+                {date}
+              </p>
             </li>
           ))}
         </ul>

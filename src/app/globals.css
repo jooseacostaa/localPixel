@@ -31,3 +31,21 @@ h1 {
 .skip-link:focus {
   transform: translateY(0);
 }
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
+html[data-theme="dark"] body {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+.form-field {
+  width: 100%;
+  border: 1px solid #64748b;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  background: transparent;
+}
