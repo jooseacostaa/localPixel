@@ -36,3 +36,14 @@ npm run build
 Esta entrega se centra en interfaz y navegación. La autenticación y los datos serán de demostración, sin backend ni CRUD.
 
 No subir node_modules, .next ni archivos .env a GitHub.
+
+## Formato del código
+
+El proyecto utiliza Prettier con dos espacios de sangría. En VS Code, la extensión Prettier (`esbenp.prettier-vscode`) formateará al guardar.
+
+```sh
+npm run format
+npm run format:check
+```
+
+Se excluyen las dependencias, las carpetas generadas y el archivo de bloqueo de npm.
