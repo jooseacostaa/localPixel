@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export default function Theme() {
+export default function ThemeInitializer() {
   useEffect(() => {
     try {
       document.documentElement.dataset.theme =

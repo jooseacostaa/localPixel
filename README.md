@@ -22,7 +22,15 @@ npm run build
 ## Estructura
 
 - src/app: páginas, layout y estilos globales.
-- src/components: componentes compartidos de formularios y avisos.
+- src/components/layout: header y navegación compartidos.
+- src/components/dashboard: cifras, accesos rápidos y actividad del inicio.
+- src/components/auth: formulario compartido de acceso y registro.
+- src/components/orders: formulario de pedido.
+- src/components/theme: aplicación del tema y ajustes de apariencia.
+- src/components/feedback: avisos de conexión y de acceso.
+
+Las páginas de Next.js componen estas piezas. Las páginas sencillas de ayuda y listado mantienen su contenido en su ruta. Los datos estáticos están junto al componente que los utiliza.
+
 - src/app/favicon.ico: favicon y logo del header.
 
 ## Etapas y commits
