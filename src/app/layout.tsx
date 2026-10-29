@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import Theme from "./theme";
+import { SessionNotice } from "@/components/session";
+import ConnectionNotice from "@/components/connection-notice";
 import Navigation from "./navigation";
 import "./globals.css";
 
@@ -44,6 +46,8 @@ export default function RootLayout({
           tabIndex={-1}
           className="mx-auto max-w-5xl px-5 py-10"
         >
+          <ConnectionNotice />
+          <SessionNotice />
           {children}
         </main>
       </body>

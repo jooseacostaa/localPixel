@@ -11,7 +11,7 @@ export default function Pages() {
     <section>
       <h1>Mis páginas</h1>
       <p className="mt-3 text-slate-600 dark:text-slate-300">
-        Estas páginas son ejemplos de cómo se mostrará tu contenido.
+        Consulta tus páginas web.
       </p>
       <ul className="mt-6 space-y-4">
         {pages.map((page) => (

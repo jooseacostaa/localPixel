@@ -22,7 +22,8 @@ npm run build
 ## Estructura
 
 - src/app: páginas, layout y estilos globales.
-- public: recursos estáticos; el logo definitivo se incorporará más adelante.
+- src/components: componentes compartidos de formularios y avisos.
+- src/app/favicon.ico: favicon y logo del header.
 
 ## Etapas y commits
 

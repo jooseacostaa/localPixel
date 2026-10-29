@@ -38,10 +38,6 @@ export default function Home() {
       <p className="mt-3 text-slate-600 dark:text-slate-300">
         Bienvenido a LocalPixel. Gestiona tus páginas web y pedidos desde aquí.
       </p>
-      <p className="mt-4 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950 p-4 text-sm text-blue-900 dark:text-blue-100">
-        Vista de demostración: las cifras y la actividad son datos de ejemplo.
-      </p>
-
       <dl className="mt-8 grid gap-4 sm:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
           <dt className="text-sm text-slate-600 dark:text-slate-300">
