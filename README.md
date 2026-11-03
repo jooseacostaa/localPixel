@@ -23,13 +23,13 @@ npm run build
 
 - src/app: páginas, layout y estilos globales.
 - src/components/layout: header y navegación compartidos.
-- src/components/dashboard: cifras, accesos rápidos y actividad del inicio.
+- src/components/dashboard: accesos rápidos del inicio.
 - src/components/auth: formulario compartido de acceso y registro.
 - src/components/orders: formulario de pedido.
 - src/components/theme: aplicación del tema y ajustes de apariencia.
 - src/components/feedback: avisos de conexión y de acceso.
 
-Las páginas de Next.js componen estas piezas. Las páginas sencillas de ayuda y listado mantienen su contenido en su ruta. Los datos estáticos están junto al componente que los utiliza.
+Las páginas de Next.js componen estas piezas. Las páginas sencillas de ayuda y listado mantienen su contenido en su ruta.
 
 - src/app/favicon.ico: favicon y logo del header.
 
@@ -42,7 +42,7 @@ Las páginas de Next.js componen estas piezas. Las páginas sencillas de ayuda y
 5. Acceso y feedback: feat: completar acceso y mensajes de usuario
 6. Entrega: docs: preparar entrega y guía del proyecto
 
-El registro, el acceso y el formulario de nuevo pedido están conectados al backend Spring Boot. Arranca MySQL en Laragon y ejecuta `LocalPixelApplication` en IntelliJ antes de probarlos. Next.js reenvía las peticiones a `http://127.0.0.1:8080` por defecto. Si ejecutas el backend en otro puerto, define `LOCALPIXEL_API_URL` antes de arrancar Next.js. En Comprar página puedes seleccionar varios servicios y guardar el pedido. Mis páginas sigue mostrando datos de demostración.
+El registro, el acceso y el formulario de nuevo pedido están conectados al backend Spring Boot. Arranca MySQL en Laragon y ejecuta `LocalPixelApplication` en IntelliJ antes de probarlos. Next.js reenvía las peticiones a `http://127.0.0.1:8080` por defecto. Si ejecutas el backend en otro puerto, define `LOCALPIXEL_API_URL` antes de arrancar Next.js. En Comprar página puedes seleccionar varios servicios y guardar el pedido. La consulta de páginas está pendiente de integración.
 
 No subir node_modules, .next ni archivos .env a GitHub.
 

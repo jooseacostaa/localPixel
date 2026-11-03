@@ -151,7 +151,6 @@ export default function OrderForm() {
             name="domain"
             required
             maxLength={253}
-            placeholder="ejemplo.com"
             aria-describedby="domain-help"
             className="form-field"
           />
@@ -159,7 +158,7 @@ export default function OrderForm() {
             id="domain-help"
             className="mt-2 text-sm text-slate-600 dark:text-slate-300"
           >
-            Por ejemplo: ejemplo.com.
+            Escribe el dominio que quieres para tu web.
           </p>
         </div>
         <div>

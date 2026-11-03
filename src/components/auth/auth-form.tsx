@@ -118,7 +118,6 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
               autoComplete="email"
               required
               maxLength={254}
-              placeholder="nombre@ejemplo.com"
               className="form-field"
             />
           </div>
