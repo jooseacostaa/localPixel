@@ -3,8 +3,8 @@ import Link from "next/link";
 const sections = [
   {
     href: "/paginas",
-    title: "Mis páginas",
-    description: "Consulta tus páginas web.",
+    title: "Mis pedidos",
+    description: "Consulta y busca tus pedidos.",
   },
   {
     href: "/comprar",

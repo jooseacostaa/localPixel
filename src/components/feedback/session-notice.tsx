@@ -35,7 +35,7 @@ export function SessionNotice() {
                   method: "DELETE",
                 });
                 if (respuesta.status !== 204) throw new Error();
-                setEstado("visitante");
+                window.location.reload();
               } catch {
                 setError(true);
               }
