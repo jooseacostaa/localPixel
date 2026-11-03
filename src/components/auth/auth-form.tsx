@@ -6,22 +6,20 @@ import { useState } from "react";
 export default function AuthForm({ register = false }: { register?: boolean }) {
   const [showPassword, setShowPassword] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
 
   return (
     <section className="mx-auto max-w-md">
       <h1>{register ? "Crear cuenta" : "Iniciar sesión"}</h1>
       {completed ? (
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-          <p role="status">
-            {register
-              ? "Datos de registro correctos."
-              : "Datos correctos. Puedes continuar."}
-          </p>
+          <p role="status">Cuenta creada. Ya puedes iniciar sesión.</p>
           <Link
-            href="/"
+            href="/login"
             className="mt-5 inline-block rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
           >
-            Ir al panel de control
+            Iniciar sesión
           </Link>
         </div>
       ) : (
@@ -42,13 +40,53 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
                 : "",
             );
           }}
-          onSubmit={(event) => {
+          onSubmit={async (event) => {
             event.preventDefault();
-
-            event.currentTarget.reset();
-            setCompleted(true);
+            if (pending) return;
+            const form = new FormData(event.currentTarget);
+            const datos = {
+              correo: form.get("email"),
+              password: form.get("password"),
+            };
+            setError("");
+            setPending(true);
+            try {
+              const respuesta = await fetch(
+                register ? "/api/sesion/registro" : "/api/sesion",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(
+                    register
+                      ? {
+                          ...datos,
+                          nombre: form.get("name"),
+                          confirmacion: form.get("confirmation"),
+                        }
+                      : datos,
+                  ),
+                },
+              );
+              if (respuesta.status !== (register ? 201 : 204)) {
+                const detalle = await respuesta.json().catch(() => null);
+                setError(
+                  detalle?.mensaje ??
+                    "No se pudo completar la solicitud. Comprueba que el servidor esté iniciado.",
+                );
+                return;
+              }
+              if (register) setCompleted(true);
+              else window.location.assign("/");
+            } catch {
+              setError(
+                "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+              );
+            } finally {
+              setPending(false);
+            }
           }}
         >
+          {error && <p role="alert">{error}</p>}
           <p className="text-sm text-slate-600 dark:text-slate-300">
             Todos los campos son obligatorios.
           </p>
@@ -132,6 +170,7 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
           </label>
           <button
             type="submit"
+            disabled={pending}
             className="w-full rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
           >
             {register ? "Crear cuenta" : "Iniciar sesión"}

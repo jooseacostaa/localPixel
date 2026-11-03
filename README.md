@@ -42,7 +42,7 @@ Las páginas de Next.js componen estas piezas. Las páginas sencillas de ayuda y
 5. Acceso y feedback: feat: completar acceso y mensajes de usuario
 6. Entrega: docs: preparar entrega y guía del proyecto
 
-Esta entrega se centra en interfaz y navegación. La autenticación y los datos serán de demostración, sin backend ni CRUD.
+El registro y el acceso están conectados al backend Spring Boot. Arranca MySQL en Laragon y ejecuta `LocalPixelApplication` en IntelliJ antes de probarlos. Next.js reenvía las peticiones a `http://127.0.0.1:8080` por defecto. Si ejecutas el backend en otro puerto, define `LOCALPIXEL_API_URL` antes de arrancar Next.js. El listado y el formulario de pedidos de la web siguen siendo de demostración.
 
 No subir node_modules, .next ni archivos .env a GitHub.
 
