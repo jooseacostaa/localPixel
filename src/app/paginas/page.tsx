@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import OrderForm from "@/components/orders/order-form";
 
 type Pedido = {
@@ -23,6 +23,20 @@ export default function Pages() {
   const [eliminando, setEliminando] = useState<number | null>(null);
   const [mensaje, setMensaje] = useState("");
   const [errorOperacion, setErrorOperacion] = useState("");
+  const titulo = useRef<HTMLHeadingElement>(null);
+  const ultimoEditado = useRef<number | null>(null);
+  const restaurarFoco = useRef(false);
+
+  useEffect(() => {
+    if (!restaurarFoco.current || editando || resultado.estado !== "listo")
+      return;
+    const boton =
+      ultimoEditado.current === null
+        ? null
+        : document.getElementById(`editar-pedido-${ultimoEditado.current}`);
+    (boton ?? titulo.current)?.focus();
+    restaurarFoco.current = false;
+  }, [editando, resultado]);
 
   function recargar() {
     setResultado({ estado: "cargando" });
@@ -49,9 +63,13 @@ export default function Pages() {
         return;
       }
       if (respuesta.status === 204) {
+        ultimoEditado.current = null;
+        restaurarFoco.current = true;
         setMensaje("Pedido eliminado correctamente.");
         recargar();
       } else if (respuesta.status === 404) {
+        ultimoEditado.current = null;
+        restaurarFoco.current = true;
         setErrorOperacion("El pedido ya no está disponible.");
         recargar();
       } else {
@@ -106,8 +124,12 @@ export default function Pages() {
           descripcion: editando.descripcion,
           servicioIds: editando.servicios.map((servicio) => servicio.id),
         }}
-        onCancelar={() => setEditando(null)}
+        onCancelar={() => {
+          restaurarFoco.current = true;
+          setEditando(null);
+        }}
         onGuardado={() => {
+          restaurarFoco.current = true;
           setEditando(null);
           setMensaje("Pedido actualizado correctamente.");
           recargar();
@@ -118,7 +140,9 @@ export default function Pages() {
 
   return (
     <section>
-      <h1>Mis pedidos</h1>
+      <h1 ref={titulo} tabIndex={-1}>
+        Mis pedidos
+      </h1>
       <p className="mt-3 text-slate-600 dark:text-slate-300">
         Consulta tus pedidos y los servicios incluidos en cada uno.
       </p>
@@ -182,6 +206,11 @@ export default function Pages() {
           intentarlo.
         </p>
       )}
+      {resultado.estado === "listo" && resultado.pedidos.length > 0 && (
+        <p role="status" className="mt-6">
+          Pedidos encontrados: {resultado.pedidos.length}.
+        </p>
+      )}
       {resultado.estado === "listo" &&
         (resultado.pedidos.length === 0 ? (
           <p role="status" className="mt-6">
@@ -204,6 +233,7 @@ export default function Pages() {
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
                   <button
+                    id={`editar-pedido-${pedido.id}`}
                     type="button"
                     disabled={eliminando !== null}
                     className="rounded-lg border px-4 py-2"
@@ -211,6 +241,7 @@ export default function Pages() {
                     onClick={() => {
                       setMensaje("");
                       setErrorOperacion("");
+                      ultimoEditado.current = pedido.id;
                       setEditando(pedido);
                     }}
                   >

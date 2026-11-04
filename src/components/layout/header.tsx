@@ -18,7 +18,7 @@ export default function Header() {
             unoptimized
             className="rounded bg-white"
           />
-          Local<span className="text-blue-600">Pixel</span>
+          Local<span className="text-blue-600 dark:text-blue-300">Pixel</span>
         </Link>
         <Navigation />
       </div>

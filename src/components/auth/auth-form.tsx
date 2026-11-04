@@ -1,20 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function AuthForm({ register = false }: { register?: boolean }) {
   const [showPassword, setShowPassword] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [campoError, setCampoError] = useState<string | null>(null);
+  const avisoError = useRef<HTMLParagraphElement>(null);
+  const avisoRegistro = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    if (error) avisoError.current?.focus();
+    else if (completed) avisoRegistro.current?.focus();
+  }, [error, completed]);
 
   return (
     <section className="mx-auto max-w-md">
       <h1>{register ? "Crear cuenta" : "Iniciar sesión"}</h1>
       {completed ? (
         <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-          <p role="status">Cuenta creada. Ya puedes iniciar sesión.</p>
+          <p ref={avisoRegistro} tabIndex={-1} role="status">
+            Cuenta creada. Ya puedes iniciar sesión.
+          </p>
           <Link
             href="/login"
             className="mt-5 inline-block rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
@@ -24,6 +34,7 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
         </div>
       ) : (
         <form
+          aria-busy={pending}
           className="mt-6 space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800"
           onInput={(event) => {
             if (!register) return;
@@ -49,6 +60,7 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
               password: form.get("password"),
             };
             setError("");
+            setCampoError(null);
             setPending(true);
             try {
               const respuesta = await fetch(
@@ -69,6 +81,7 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
               );
               if (respuesta.status !== (register ? 201 : 204)) {
                 const detalle = await respuesta.json().catch(() => null);
+                setCampoError(detalle?.campo ?? null);
                 setError(
                   detalle?.mensaje ??
                     "No se pudo completar la solicitud. Comprueba que el servidor esté iniciado.",
@@ -86,7 +99,11 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
             }
           }}
         >
-          {error && <p role="alert">{error}</p>}
+          {error && (
+            <p id="acceso-error" ref={avisoError} tabIndex={-1} role="alert">
+              {error}
+            </p>
+          )}
           <p className="text-sm text-slate-600 dark:text-slate-300">
             Todos los campos son obligatorios.
           </p>
@@ -101,6 +118,10 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
                 autoComplete="name"
                 required
                 maxLength={80}
+                aria-invalid={campoError === "nombre" || undefined}
+                aria-describedby={
+                  campoError === "nombre" ? "acceso-error" : undefined
+                }
                 pattern=".*\S.*"
                 title="Escribe un nombre que no contenga solo espacios."
                 className="form-field"
@@ -118,6 +139,10 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
               autoComplete="email"
               required
               maxLength={254}
+              aria-invalid={campoError === "correo" || undefined}
+              aria-describedby={
+                campoError === "correo" ? "acceso-error" : undefined
+              }
               className="form-field"
             />
           </div>
@@ -132,7 +157,12 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
               autoComplete={register ? "new-password" : "current-password"}
               required
               minLength={8}
-              aria-describedby="password-help"
+              aria-invalid={campoError === "password" || undefined}
+              aria-describedby={
+                campoError === "password"
+                  ? "password-help acceso-error"
+                  : "password-help"
+              }
               className="form-field"
             />
             <p
@@ -154,6 +184,10 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
                 autoComplete="new-password"
                 required
                 minLength={8}
+                aria-invalid={campoError === "confirmacion" || undefined}
+                aria-describedby={
+                  campoError === "confirmacion" ? "acceso-error" : undefined
+                }
                 className="form-field"
               />
             </div>
@@ -172,7 +206,11 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
             disabled={pending}
             className="w-full rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
           >
-            {register ? "Crear cuenta" : "Iniciar sesión"}
+            {pending
+              ? "Enviando…"
+              : register
+                ? "Crear cuenta"
+                : "Iniciar sesión"}
           </button>
         </form>
       )}

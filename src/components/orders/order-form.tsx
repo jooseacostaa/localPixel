@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 type Servicio = { id: number; nombre: string };
@@ -26,6 +26,28 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
   const [error, setError] = useState("");
   const [sinSesion, setSinSesion] = useState(false);
   const [guardando, setGuardando] = useState(false);
+  const [intentoCarga, setIntentoCarga] = useState(0);
+  const [campoError, setCampoError] = useState<string | null>(null);
+  const titulo = useRef<HTMLHeadingElement>(null);
+  const tituloConfirmacion = useRef<HTMLHeadingElement>(null);
+  const resultadoGuardado = useRef<HTMLParagraphElement>(null);
+  const avisoError = useRef<HTMLParagraphElement>(null);
+  const primerRender = useRef(true);
+  const esEdicion = inicial !== undefined;
+
+  useEffect(() => {
+    if (primerRender.current) {
+      primerRender.current = false;
+      if (!esEdicion) return;
+    }
+    if (step === "form") titulo.current?.focus();
+    if (step === "confirmation") tituloConfirmacion.current?.focus();
+    if (step === "completed") resultadoGuardado.current?.focus();
+  }, [step, esEdicion]);
+
+  useEffect(() => {
+    if (error) avisoError.current?.focus();
+  }, [error]);
 
   useEffect(() => {
     const solicitud = new AbortController();
@@ -47,12 +69,13 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
     }
     void cargar();
     return () => solicitud.abort();
-  }, []);
+  }, [intentoCarga]);
 
   async function confirmar() {
     if (!pedido || guardando) return;
     setGuardando(true);
     setError("");
+    setCampoError(null);
     try {
       const respuesta = await fetch(
         inicial ? `/api/pedidos/${inicial.id}` : "/api/pedidos",
@@ -69,6 +92,7 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
         setSinSesion(true);
       } else {
         const detalle = await respuesta.json().catch(() => null);
+        setCampoError(detalle?.campo ?? null);
         setError(detalle?.mensaje ?? "No se pudo guardar el pedido.");
       }
     } catch {
@@ -92,17 +116,37 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
   }
 
   return (
-    <section className="max-w-2xl">
-      <h1>{inicial ? "Editar pedido" : "Nuevo pedido"}</h1>
+    <section className="max-w-2xl" aria-busy={guardando}>
+      <h1 ref={titulo} tabIndex={-1}>
+        {inicial ? "Editar pedido" : "Nuevo pedido"}
+      </h1>
       <p className="mt-3 text-slate-600 dark:text-slate-300">
         Completa los datos del pedido y selecciona uno o varios servicios.
       </p>
       {error && (
-        <p role="alert" className="mt-4">
+        <p
+          id="pedido-error"
+          ref={avisoError}
+          tabIndex={-1}
+          role="alert"
+          className="mt-4"
+        >
           {error}
         </p>
       )}
       {servicios === null && !error && <p role="status">Cargando servicios…</p>}
+      {servicios === null && error && (
+        <button
+          type="button"
+          className="mt-4 rounded-lg border px-4 py-2"
+          onClick={() => {
+            setError("");
+            setIntentoCarga((intento) => intento + 1);
+          }}
+        >
+          Volver a cargar servicios
+        </button>
+      )}
       {servicios?.length === 0 && <p>No hay servicios disponibles.</p>}
       <form
         hidden={step !== "form"}
@@ -111,15 +155,31 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
           event.preventDefault();
           const form = new FormData(event.currentTarget);
           const servicioIds = form.getAll("servicio").map(Number);
+          const nombre = String(form.get("name")).trim();
+          const dominioDeseado = String(form.get("domain")).trim();
+          const descripcion = String(form.get("description")).trim();
+          setCampoError(null);
+          if (!nombre || !dominioDeseado || !descripcion) {
+            setCampoError(
+              !nombre
+                ? "nombre"
+                : !dominioDeseado
+                  ? "dominioDeseado"
+                  : "descripcion",
+            );
+            setError("Completa los campos obligatorios con texto.");
+            return;
+          }
           if (!servicioIds.length) {
+            setCampoError("servicioIds");
             setError("Selecciona al menos un servicio.");
             return;
           }
           setError("");
           setPedido({
-            nombre: String(form.get("name")),
-            dominioDeseado: String(form.get("domain")),
-            descripcion: String(form.get("description")),
+            nombre,
+            dominioDeseado,
+            descripcion,
             servicioIds,
           });
           setStep("confirmation");
@@ -138,10 +198,19 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
             defaultValue={inicial?.nombre}
             required
             maxLength={100}
+            aria-invalid={campoError === "nombre" || undefined}
+            aria-describedby={
+              campoError === "nombre" ? "pedido-error" : undefined
+            }
             className="form-field"
           />
         </div>
-        <fieldset>
+        <fieldset
+          aria-invalid={campoError === "servicioIds" || undefined}
+          aria-describedby={
+            campoError === "servicioIds" ? "pedido-error" : undefined
+          }
+        >
           <legend className="mb-2 font-medium">Servicios *</legend>
           {servicios?.map((servicio) => (
             <label
@@ -168,7 +237,12 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
             defaultValue={inicial?.dominioDeseado}
             required
             maxLength={253}
-            aria-describedby="domain-help"
+            aria-invalid={campoError === "dominioDeseado" || undefined}
+            aria-describedby={
+              campoError === "dominioDeseado"
+                ? "domain-help pedido-error"
+                : "domain-help"
+            }
             className="form-field"
           />
           <p
@@ -189,6 +263,10 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
             required
             maxLength={1000}
             rows={4}
+            aria-invalid={campoError === "descripcion" || undefined}
+            aria-describedby={
+              campoError === "descripcion" ? "pedido-error" : undefined
+            }
             className="form-field"
           />
         </div>
@@ -205,7 +283,9 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
           className="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-950"
           aria-label="Confirmación del pedido"
         >
-          <p role="status">¿Quieres confirmar los datos del pedido?</p>
+          <h2 ref={tituloConfirmacion} tabIndex={-1} className="font-semibold">
+            ¿Quieres confirmar los datos del pedido?
+          </h2>
           <p className="mt-2">
             {servicios
               ?.filter((s) => pedido?.servicioIds.includes(s.id))
@@ -232,7 +312,12 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
           </div>
         </section>
       )}
-      <p role="status" className="mt-4 text-blue-700 dark:text-blue-300">
+      <p
+        ref={resultadoGuardado}
+        tabIndex={-1}
+        role="status"
+        className="mt-4 text-blue-700 dark:text-blue-300"
+      >
         {step === "completed" ? "Pedido guardado correctamente." : ""}
       </p>
       {onCancelar && (
