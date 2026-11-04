@@ -106,7 +106,7 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
 
   if (sinSesion) {
     return (
-      <p>
+      <p className="feedback feedback-warning">
         <Link href="/login" className="underline">
           Inicia sesión
         </Link>{" "}
@@ -129,7 +129,7 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
           ref={avisoError}
           tabIndex={-1}
           role="alert"
-          className="mt-4"
+          className="feedback feedback-error mt-4"
         >
           {error}
         </p>
@@ -138,7 +138,7 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
       {servicios === null && error && (
         <button
           type="button"
-          className="mt-4 rounded-lg border px-4 py-2"
+          className="mt-4 button-secondary"
           onClick={() => {
             setError("");
             setIntentoCarga((intento) => intento + 1);
@@ -147,10 +147,14 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
           Volver a cargar servicios
         </button>
       )}
-      {servicios?.length === 0 && <p>No hay servicios disponibles.</p>}
+      {servicios?.length === 0 && (
+        <p className="feedback feedback-warning mt-4">
+          No hay servicios disponibles. Vuelve a intentarlo más tarde.
+        </p>
+      )}
       <form
         hidden={step !== "form"}
-        className="mt-6 space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800"
+        className="mt-6 space-y-5 surface p-6"
         onSubmit={(event) => {
           event.preventDefault();
           const form = new FormData(event.currentTarget);
@@ -273,7 +277,7 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
         <button
           type="submit"
           disabled={!servicios?.length}
-          className="rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
+          className="button-primary"
         >
           Continuar
         </button>
@@ -297,7 +301,7 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
               type="button"
               onClick={confirmar}
               disabled={guardando}
-              className="rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
+              className="button-primary"
             >
               {guardando ? "Guardando…" : "Confirmar"}
             </button>
@@ -305,7 +309,7 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
               type="button"
               onClick={() => setStep("form")}
               disabled={guardando}
-              className="rounded-lg border border-slate-600 px-5 py-3"
+              className="button-secondary"
             >
               Volver a editar
             </button>
@@ -316,7 +320,7 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
         ref={resultadoGuardado}
         tabIndex={-1}
         role="status"
-        className="mt-4 text-blue-700 dark:text-blue-300"
+        className="feedback feedback-success mt-4"
       >
         {step === "completed" ? "Pedido guardado correctamente." : ""}
       </p>
@@ -325,7 +329,7 @@ export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
           type="button"
           disabled={guardando}
           onClick={onCancelar}
-          className="mt-4 rounded-lg border px-5 py-3"
+          className="mt-4 button-secondary"
         >
           Cancelar edición
         </button>

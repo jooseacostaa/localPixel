@@ -147,12 +147,12 @@ export default function Pages() {
         Consulta tus pedidos y los servicios incluidos en cada uno.
       </p>
       {mensaje && (
-        <p role="status" className="mt-4">
+        <p role="status" className="feedback feedback-success mt-4">
           {mensaje}
         </p>
       )}
       {errorOperacion && (
-        <p role="alert" className="mt-4">
+        <p role="alert" className="feedback feedback-error mt-4">
           {errorOperacion}
         </p>
       )}
@@ -180,7 +180,7 @@ export default function Pages() {
             <button
               type="submit"
               disabled={eliminando !== null}
-              className="rounded-lg border px-4 py-2"
+              className="button-secondary"
             >
               Buscar
             </button>
@@ -193,7 +193,7 @@ export default function Pages() {
         </p>
       )}
       {resultado.estado === "sinSesion" && (
-        <p className="mt-6">
+        <p className="feedback feedback-warning mt-6">
           <Link href="/login" className="underline">
             Inicia sesión
           </Link>{" "}
@@ -201,7 +201,7 @@ export default function Pages() {
         </p>
       )}
       {resultado.estado === "error" && (
-        <p role="alert" className="mt-6">
+        <p role="alert" className="feedback feedback-error mt-6">
           No se pudieron cargar los pedidos. Pulsa Buscar para volver a
           intentarlo.
         </p>
@@ -221,10 +221,7 @@ export default function Pages() {
         ) : (
           <ul className="mt-6 space-y-4">
             {resultado.pedidos.map((pedido) => (
-              <li
-                key={pedido.id}
-                className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800"
-              >
+              <li key={pedido.id} className="surface p-6">
                 <h2 className="break-words text-lg font-semibold">
                   {pedido.nombre}
                 </h2>
@@ -236,7 +233,7 @@ export default function Pages() {
                     id={`editar-pedido-${pedido.id}`}
                     type="button"
                     disabled={eliminando !== null}
-                    className="rounded-lg border px-4 py-2"
+                    className="button-secondary"
                     aria-label={`Editar pedido ${pedido.nombre}`}
                     onClick={() => {
                       setMensaje("");
@@ -250,7 +247,7 @@ export default function Pages() {
                   <button
                     type="button"
                     disabled={eliminando !== null}
-                    className="rounded-lg border px-4 py-2"
+                    className="button-secondary button-danger"
                     aria-label={`Eliminar pedido ${pedido.nombre}`}
                     onClick={() => eliminar(pedido)}
                   >
@@ -270,10 +267,7 @@ export default function Pages() {
             ))}
           </ul>
         ))}
-      <Link
-        href="/comprar"
-        className="mt-6 inline-block rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
-      >
+      <Link href="/comprar" className="mt-6 inline-block button-primary">
         Comprar página
       </Link>
     </section>

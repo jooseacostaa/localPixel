@@ -7,10 +7,7 @@ export default function NotFound() {
       <p className="mt-3 text-slate-600 dark:text-slate-300">
         La dirección que has abierto no existe.
       </p>
-      <Link
-        href="/"
-        className="mt-6 inline-block rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
-      >
+      <Link href="/" className="mt-6 inline-block button-primary">
         Volver al inicio
       </Link>
     </section>

@@ -31,7 +31,9 @@ export function SessionNotice() {
   if (estado === null) return null;
 
   return (
-    <p className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-100">
+    <p
+      className={`feedback mb-6 text-sm ${estado === "error" ? "feedback-warning" : estado === "cliente" ? "feedback-success" : ""}`}
+    >
       {estado === "error" ? (
         <>
           <span role="status">
@@ -74,7 +76,12 @@ export function SessionNotice() {
           >
             {cerrando ? "Cerrando sesión…" : "Cerrar sesión"}
           </button>
-          {error && <span role="alert"> No se pudo cerrar la sesión.</span>}
+          {error && (
+            <span role="alert" className="feedback feedback-error mt-3 block">
+              No se pudo cerrar la sesión. Comprueba tu conexión y vuelve a
+              intentarlo.
+            </span>
+          )}
         </>
       ) : (
         <>

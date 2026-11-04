@@ -23,21 +23,46 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
     <section className="mx-auto max-w-md">
       <h1>{register ? "Crear cuenta" : "Iniciar sesión"}</h1>
       {completed ? (
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-          <p ref={avisoRegistro} tabIndex={-1} role="status">
+        <div className="mt-6 surface p-6">
+          <p
+            className="feedback feedback-success"
+            ref={avisoRegistro}
+            tabIndex={-1}
+            role="status"
+          >
             Cuenta creada. Ya puedes iniciar sesión.
           </p>
-          <Link
-            href="/login"
-            className="mt-5 inline-block rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
-          >
+          <Link href="/login" className="mt-5 inline-block button-primary">
             Iniciar sesión
           </Link>
         </div>
       ) : (
         <form
           aria-busy={pending}
-          className="mt-6 space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800"
+          onInvalid={(event) => {
+            event.preventDefault();
+            const input = event.target as HTMLInputElement;
+            if (input !== event.currentTarget.querySelector(":invalid")) return;
+            const campos: Record<string, string> = {
+              name: "nombre",
+              email: "correo",
+              password: "password",
+              confirmation: "confirmacion",
+            };
+            setCampoError(campos[input.name]);
+            setError(
+              input.validity.valueMissing
+                ? `Completa el campo ${input.labels?.[0]?.textContent?.trim().toLowerCase()}.`
+                : input.type === "email"
+                  ? "Escribe un correo válido, con el formato nombre@dominio.com."
+                  : input.validity.tooShort
+                    ? "La contraseña debe tener al menos 8 caracteres."
+                    : input.name === "confirmation"
+                      ? "Las contraseñas no coinciden. Vuelve a escribir la misma contraseña."
+                      : "Escribe un nombre que no contenga solo espacios.",
+            );
+          }}
+          className="mt-6 space-y-5 surface p-6"
           onInput={(event) => {
             if (!register) return;
             const form = event.currentTarget;
@@ -83,10 +108,20 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
               );
               if (respuesta.status !== (register ? 201 : 204)) {
                 const detalle = await respuesta.json().catch(() => null);
-                setCampoError(detalle?.campo ?? null);
+                setCampoError(
+                  !register && respuesta.status === 401
+                    ? "credenciales"
+                    : (detalle?.campo ?? null),
+                );
                 setError(
-                  detalle?.mensaje ??
-                    "No se pudo completar la solicitud. Comprueba que el servidor esté iniciado.",
+                  !register && respuesta.status === 401
+                    ? "El correo o la contraseña no son correctos. Revísalos e inténtalo de nuevo."
+                    : register && respuesta.status === 409
+                      ? "Ya existe una cuenta con este correo. Inicia sesión o utiliza otro correo."
+                      : respuesta.status >= 500
+                        ? "El servicio no está disponible en este momento. Inténtalo de nuevo más tarde."
+                        : (detalle?.mensaje ??
+                          "No se pudo completar la solicitud. Revisa los datos e inténtalo de nuevo."),
                 );
                 return;
               }
@@ -97,7 +132,7 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
               }
             } catch {
               setError(
-                "No se pudo conectar con el servidor. Inténtalo de nuevo.",
+                "No se pudo conectar con LocalPixel. Comprueba tu conexión e inténtalo de nuevo.",
               );
             } finally {
               setPending(false);
@@ -105,7 +140,13 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
           }}
         >
           {error && (
-            <p id="acceso-error" ref={avisoError} tabIndex={-1} role="alert">
+            <p
+              className="feedback feedback-error"
+              id="acceso-error"
+              ref={avisoError}
+              tabIndex={-1}
+              role="alert"
+            >
               {error}
             </p>
           )}
@@ -144,9 +185,15 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
               autoComplete="email"
               required
               maxLength={254}
-              aria-invalid={campoError === "correo" || undefined}
+              aria-invalid={
+                campoError === "correo" ||
+                campoError === "credenciales" ||
+                undefined
+              }
               aria-describedby={
-                campoError === "correo" ? "acceso-error" : undefined
+                campoError === "correo" || campoError === "credenciales"
+                  ? "acceso-error"
+                  : undefined
               }
               className="form-field"
             />
@@ -162,9 +209,13 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
               autoComplete={register ? "new-password" : "current-password"}
               required
               minLength={8}
-              aria-invalid={campoError === "password" || undefined}
+              aria-invalid={
+                campoError === "password" ||
+                campoError === "credenciales" ||
+                undefined
+              }
               aria-describedby={
-                campoError === "password"
+                campoError === "password" || campoError === "credenciales"
                   ? "password-help acceso-error"
                   : "password-help"
               }
@@ -209,7 +260,7 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700"
+            className="w-full button-primary"
           >
             {pending
               ? "Enviando…"

@@ -22,7 +22,7 @@ export default function AppearanceSettings() {
       <p className="mt-3 text-slate-600 dark:text-slate-300">
         Ajusta la apariencia de LocalPixel.
       </p>
-      <div className="mt-6 max-w-xl rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6">
+      <div className="mt-6 max-w-xl surface p-6">
         <h2 className="text-xl font-semibold">Apariencia</h2>
         <label className="mt-5 flex min-h-11 cursor-pointer items-center gap-3">
           <input
@@ -44,10 +44,7 @@ export default function AppearanceSettings() {
           />
           Modo oscuro
         </label>
-        <p
-          role="status"
-          className="mt-3 text-sm text-slate-600 dark:text-slate-300"
-        >
+        <p role="status" className="feedback mt-3 text-sm">
           {message}
         </p>
       </div>

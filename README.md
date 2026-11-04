@@ -31,7 +31,7 @@ npm run build
 
 Las páginas de Next.js componen estas piezas. Las páginas sencillas de ayuda y listado mantienen su contenido en su ruta.
 
-- src/app/favicon.ico: favicon y logo del header.
+- src/app/icon.png: icono de la pestaña y logo de la cabecera.
 
 ## Etapas y commits
 

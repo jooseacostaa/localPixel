@@ -20,7 +20,7 @@ export default function ConnectionNotice() {
   return (
     <div role="status">
       {!online && (
-        <p className="mb-6 rounded-lg border border-amber-600 bg-amber-50 p-4 text-amber-950 dark:bg-amber-950 dark:text-amber-100">
+        <p className="feedback feedback-warning mb-6">
           El navegador indica que no hay conexión. Algunas páginas pueden no
           cargar hasta que recuperes la conexión.
         </p>
