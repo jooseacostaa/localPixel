@@ -1,6 +1,6 @@
 # LocalPixel
 
-Proyecto académico UT2: inicio y navegación. Next.js, React, Tailwind CSS y TypeScript.
+Frontend académico de LocalPixel. Next.js, React, Tailwind CSS y TypeScript. Incluye registro, acceso, sesión y CRUD de pedidos con búsqueda.
 
 ## Ejecutar
 
@@ -42,7 +42,7 @@ Las páginas de Next.js componen estas piezas. Las páginas sencillas de ayuda y
 5. Acceso y feedback: feat: completar acceso y mensajes de usuario
 6. Entrega: docs: preparar entrega y guía del proyecto
 
-El registro, el acceso y el formulario de nuevo pedido están conectados al backend Spring Boot. Arranca MySQL en Laragon y ejecuta `LocalPixelApplication` en IntelliJ antes de probarlos. Next.js reenvía las peticiones a `http://127.0.0.1:8080` por defecto. Si ejecutas el backend en otro puerto, define `LOCALPIXEL_API_URL` antes de arrancar Next.js. En Comprar página puedes seleccionar varios servicios y guardar el pedido. La consulta de páginas está pendiente de integración.
+El registro, el acceso y el CRUD de pedidos están conectados al backend Spring Boot. Arranca MySQL en Laragon y ejecuta `LocalPixelApplication` en IntelliJ antes de probarlos. Next.js reenvía las peticiones a `http://127.0.0.1:8080` por defecto. Si ejecutas el backend en otro puerto, define `LOCALPIXEL_API_URL` antes de arrancar Next.js. En Comprar página puedes seleccionar varios servicios y guardar el pedido. En Mis pedidos puedes consultar, buscar, editar y eliminar tus pedidos.
 
 No subir node_modules, .next ni archivos .env a GitHub.
 
