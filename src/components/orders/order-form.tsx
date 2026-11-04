@@ -11,7 +11,13 @@ type Pedido = {
   servicioIds: number[];
 };
 
-export default function OrderForm() {
+type Props = {
+  inicial?: Pedido & { id: number };
+  onGuardado?: () => void;
+  onCancelar?: () => void;
+};
+
+export default function OrderForm({ inicial, onGuardado, onCancelar }: Props) {
   const [step, setStep] = useState<"form" | "confirmation" | "completed">(
     "form",
   );
@@ -48,13 +54,17 @@ export default function OrderForm() {
     setGuardando(true);
     setError("");
     try {
-      const respuesta = await fetch("/api/pedidos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(pedido),
-      });
-      if (respuesta.status === 201) {
+      const respuesta = await fetch(
+        inicial ? `/api/pedidos/${inicial.id}` : "/api/pedidos",
+        {
+          method: inicial ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(pedido),
+        },
+      );
+      if (respuesta.status === (inicial ? 200 : 201)) {
         setStep("completed");
+        onGuardado?.();
       } else if (respuesta.status === 401) {
         setSinSesion(true);
       } else {
@@ -76,14 +86,14 @@ export default function OrderForm() {
         <Link href="/login" className="underline">
           Inicia sesión
         </Link>{" "}
-        para crear un pedido.
+        para gestionar tus pedidos.
       </p>
     );
   }
 
   return (
     <section className="max-w-2xl">
-      <h1>Nuevo pedido</h1>
+      <h1>{inicial ? "Editar pedido" : "Nuevo pedido"}</h1>
       <p className="mt-3 text-slate-600 dark:text-slate-300">
         Completa los datos del pedido y selecciona uno o varios servicios.
       </p>
@@ -125,6 +135,7 @@ export default function OrderForm() {
           <input
             id="name"
             name="name"
+            defaultValue={inicial?.nombre}
             required
             maxLength={100}
             className="form-field"
@@ -137,7 +148,12 @@ export default function OrderForm() {
               key={servicio.id}
               className="flex min-h-11 items-center gap-3"
             >
-              <input type="checkbox" name="servicio" value={servicio.id} />
+              <input
+                type="checkbox"
+                name="servicio"
+                value={servicio.id}
+                defaultChecked={inicial?.servicioIds.includes(servicio.id)}
+              />
               {servicio.nombre}
             </label>
           ))}
@@ -149,6 +165,7 @@ export default function OrderForm() {
           <input
             id="domain"
             name="domain"
+            defaultValue={inicial?.dominioDeseado}
             required
             maxLength={253}
             aria-describedby="domain-help"
@@ -168,6 +185,7 @@ export default function OrderForm() {
           <textarea
             id="description"
             name="description"
+            defaultValue={inicial?.descripcion}
             required
             maxLength={1000}
             rows={4}
@@ -217,6 +235,16 @@ export default function OrderForm() {
       <p role="status" className="mt-4 text-blue-700 dark:text-blue-300">
         {step === "completed" ? "Pedido guardado correctamente." : ""}
       </p>
+      {onCancelar && (
+        <button
+          type="button"
+          disabled={guardando}
+          onClick={onCancelar}
+          className="mt-4 rounded-lg border px-5 py-3"
+        >
+          Cancelar edición
+        </button>
+      )}
     </section>
   );
 }

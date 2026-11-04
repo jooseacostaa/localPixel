@@ -48,6 +48,8 @@ No subir node_modules, .next ni archivos .env a GitHub.
 
 ## Formato del código
 
+En Mis pedidos, Editar abre el formulario con los datos y servicios seleccionados. Guardar actualiza el pedido mediante la API y vuelve al listado conservando la búsqueda. Eliminar solicita confirmación y recarga el listado tras el borrado.
+
 El proyecto utiliza Prettier con dos espacios de sangría. En VS Code, la extensión Prettier (`esbenp.prettier-vscode`) formateará al guardar.
 
 ```sh

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import OrderForm from "@/components/orders/order-form";
 
 type Pedido = {
   id: number;
@@ -18,6 +19,54 @@ type Resultado =
 export default function Pages() {
   const [busqueda, setBusqueda] = useState({ nombre: "" });
   const [resultado, setResultado] = useState<Resultado>({ estado: "cargando" });
+  const [editando, setEditando] = useState<Pedido | null>(null);
+  const [eliminando, setEliminando] = useState<number | null>(null);
+  const [mensaje, setMensaje] = useState("");
+  const [errorOperacion, setErrorOperacion] = useState("");
+
+  function recargar() {
+    setResultado({ estado: "cargando" });
+    setBusqueda({ nombre: busqueda.nombre });
+  }
+
+  async function eliminar(pedido: Pedido) {
+    if (
+      eliminando !== null ||
+      !window.confirm(
+        `¿Eliminar el pedido «${pedido.nombre}»? Esta acción es permanente.`,
+      )
+    )
+      return;
+    setEliminando(pedido.id);
+    setErrorOperacion("");
+    setMensaje("");
+    try {
+      const respuesta = await fetch(`/api/pedidos/${pedido.id}`, {
+        method: "DELETE",
+      });
+      if (respuesta.status === 401) {
+        setResultado({ estado: "sinSesion" });
+        return;
+      }
+      if (respuesta.status === 204) {
+        setMensaje("Pedido eliminado correctamente.");
+        recargar();
+      } else if (respuesta.status === 404) {
+        setErrorOperacion("El pedido ya no está disponible.");
+        recargar();
+      } else {
+        setErrorOperacion(
+          "No se pudo eliminar el pedido. Vuelve a intentarlo.",
+        );
+      }
+    } catch {
+      setErrorOperacion(
+        "No se pudo confirmar el borrado. Actualiza el listado antes de volver a intentarlo.",
+      );
+    } finally {
+      setEliminando(null);
+    }
+  }
 
   useEffect(() => {
     const solicitud = new AbortController();
@@ -46,12 +95,43 @@ export default function Pages() {
     return () => solicitud.abort();
   }, [busqueda]);
 
+  if (editando) {
+    return (
+      <OrderForm
+        key={editando.id}
+        inicial={{
+          id: editando.id,
+          nombre: editando.nombre,
+          dominioDeseado: editando.dominioDeseado,
+          descripcion: editando.descripcion,
+          servicioIds: editando.servicios.map((servicio) => servicio.id),
+        }}
+        onCancelar={() => setEditando(null)}
+        onGuardado={() => {
+          setEditando(null);
+          setMensaje("Pedido actualizado correctamente.");
+          recargar();
+        }}
+      />
+    );
+  }
+
   return (
     <section>
       <h1>Mis pedidos</h1>
       <p className="mt-3 text-slate-600 dark:text-slate-300">
         Consulta tus pedidos y los servicios incluidos en cada uno.
       </p>
+      {mensaje && (
+        <p role="status" className="mt-4">
+          {mensaje}
+        </p>
+      )}
+      {errorOperacion && (
+        <p role="alert" className="mt-4">
+          {errorOperacion}
+        </p>
+      )}
       {resultado.estado !== "sinSesion" && (
         <form
           className="mt-6 max-w-lg"
@@ -69,10 +149,15 @@ export default function Pages() {
             <input
               id="buscar-pedido"
               name="nombre"
+              defaultValue={busqueda.nombre}
               type="search"
               className="form-field flex-1"
             />
-            <button type="submit" className="rounded-lg border px-4 py-2">
+            <button
+              type="submit"
+              disabled={eliminando !== null}
+              className="rounded-lg border px-4 py-2"
+            >
               Buscar
             </button>
           </div>
@@ -117,6 +202,30 @@ export default function Pages() {
                 <p className="mt-2 break-words">
                   Dominio deseado: {pedido.dominioDeseado}
                 </p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    type="button"
+                    disabled={eliminando !== null}
+                    className="rounded-lg border px-4 py-2"
+                    aria-label={`Editar pedido ${pedido.nombre}`}
+                    onClick={() => {
+                      setMensaje("");
+                      setErrorOperacion("");
+                      setEditando(pedido);
+                    }}
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    disabled={eliminando !== null}
+                    className="rounded-lg border px-4 py-2"
+                    aria-label={`Eliminar pedido ${pedido.nombre}`}
+                    onClick={() => eliminar(pedido)}
+                  >
+                    {eliminando === pedido.id ? "Eliminando…" : "Eliminar"}
+                  </button>
+                </div>
                 <p className="mt-2 whitespace-pre-wrap break-words">
                   {pedido.descripcion}
                 </p>
