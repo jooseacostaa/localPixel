@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export default function AuthForm({ register = false }: { register?: boolean }) {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [pending, setPending] = useState(false);
@@ -89,7 +91,10 @@ export default function AuthForm({ register = false }: { register?: boolean }) {
                 return;
               }
               if (register) setCompleted(true);
-              else window.location.assign("/");
+              else {
+                router.replace("/paginas");
+                router.refresh();
+              }
             } catch {
               setError(
                 "No se pudo conectar con el servidor. Inténtalo de nuevo.",

@@ -9,7 +9,7 @@ const questions = [
   {
     title: "¿Cómo inicio y cierro sesión?",
     answer:
-      "En Iniciar sesión, introduce el correo y la contraseña de tu cuenta y pulsa Iniciar sesión. Al acceder, verás el aviso Sesión iniciada. Para salir, pulsa Cerrar sesión en ese aviso. Si se te solicita iniciar sesión de nuevo, vuelve a introducir tus credenciales.",
+      "En Iniciar sesión, introduce el correo y la contraseña de tu cuenta y pulsa Iniciar sesión. Al acceder, se abrirá Mis pedidos y verás el aviso Sesión iniciada. Para salir, pulsa Cerrar sesión en ese aviso; volverás a Iniciar sesión. Si se te solicita iniciar sesión de nuevo, vuelve a introducir tus credenciales.",
   },
   {
     title: "¿Cómo creo un pedido?",
