@@ -3,6 +3,14 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
+  async headers() {
+    return [
+      {
+        source: "/sw.js",
+        headers: [{ key: "Cache-Control", value: "no-cache" }],
+      },
+    ];
+  },
   async rewrites() {
     const backend = process.env.LOCALPIXEL_API_URL ?? "http://127.0.0.1:8080";
     return [{ source: "/api/:path*", destination: `${backend}/api/:path*` }];

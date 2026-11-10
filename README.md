@@ -19,6 +19,20 @@ Abre http://localhost:3000. Para detenerlo usa Ctrl+C.
 npm run build
 ```
 
+## Comprobar la PWA
+
+Ejecuta `npm run build` y `npm run start -- --port 3103`. Abre `http://localhost:3103`. En las herramientas de desarrollo de Chrome, entra en **Application → Manifest** para comprobar los iconos y en **Service Workers** para comprobar que `/sw.js` está activo. Marca **Offline** y recarga la página para ver el aviso sin conexión. Desmarca **Offline** para volver al inicio.
+
+Para comprobar la redirección local a HTTPS, usa un certificado de confianza para `localhost`. Con `mkcert` instalado, prepara el certificado en PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force .certs | Out-Null
+mkcert -install
+mkcert -cert-file .certs/localhost.pem -key-file .certs/localhost-key.pem localhost 127.0.0.1
+```
+
+Con Next.js en el puerto 3103, ejecuta en otra terminal `npm run start:https -- .certs/localhost.pem .certs/localhost-key.pem`. Abre `http://localhost:3080` y comprueba que la dirección cambia a `https://localhost:3443`.
+
 ## Estructura
 
 - src/app: páginas, layout y estilos globales.

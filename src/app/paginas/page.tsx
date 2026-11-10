@@ -3,18 +3,28 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import OrderForm from "@/components/orders/order-form";
-
-type Pedido = {
-  id: number;
-  nombre: string;
-  dominioDeseado: string;
-  descripcion: string;
-  servicios: { id: number; nombre: string }[];
-};
+import OrderList, { type Pedido } from "@/components/orders/order-list";
+import OrderSearch from "@/components/orders/order-search";
 
 type Resultado =
   | { estado: "cargando" | "sinSesion" | "error" }
   | { estado: "listo"; pedidos: Pedido[] };
+
+function mensajeListado(resultado: Resultado, nombre: string) {
+  if (resultado.estado === "cargando") {
+    return nombre ? `Buscando pedidos para «${nombre}»…` : "Cargando pedidos…";
+  }
+  if (resultado.estado !== "listo") return "";
+  const total = resultado.pedidos.length;
+  if (total === 0) {
+    return nombre
+      ? `No hay pedidos que coincidan con «${nombre}». Prueba con otro nombre o limpia la búsqueda.`
+      : "Todavía no tienes pedidos.";
+  }
+  const cantidad =
+    total === 1 ? "1 pedido encontrado" : `${total} pedidos encontrados`;
+  return nombre ? `${cantidad} para «${nombre}».` : `${cantidad}.`;
+}
 
 export default function Pages() {
   const [busqueda, setBusqueda] = useState({ nombre: "" });
@@ -38,9 +48,9 @@ export default function Pages() {
     restaurarFoco.current = false;
   }, [editando, resultado]);
 
-  function recargar() {
+  function recargar(nombre = busqueda.nombre) {
     setResultado({ estado: "cargando" });
-    setBusqueda({ nombre: busqueda.nombre });
+    setBusqueda({ nombre });
   }
 
   async function eliminar(pedido: Pedido) {
@@ -157,41 +167,15 @@ export default function Pages() {
         </p>
       )}
       {resultado.estado !== "sinSesion" && (
-        <form
-          className="mt-6 max-w-lg"
-          onSubmit={(evento) => {
-            evento.preventDefault();
-            const datos = new FormData(evento.currentTarget);
-            setResultado({ estado: "cargando" });
-            setBusqueda({ nombre: String(datos.get("nombre") ?? "").trim() });
-          }}
-        >
-          <label htmlFor="buscar-pedido" className="mb-2 block font-medium">
-            Buscar por nombre del pedido
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <input
-              id="buscar-pedido"
-              name="nombre"
-              defaultValue={busqueda.nombre}
-              type="search"
-              className="form-field flex-1"
-            />
-            <button
-              type="submit"
-              disabled={eliminando !== null}
-              className="button-secondary"
-            >
-              Buscar
-            </button>
-          </div>
-        </form>
+        <OrderSearch
+          nombreAplicado={busqueda.nombre}
+          deshabilitado={eliminando !== null}
+          onBuscar={recargar}
+        />
       )}
-      {resultado.estado === "cargando" && (
-        <p role="status" className="mt-6">
-          Cargando pedidos…
-        </p>
-      )}
+      <p role="status" className="mt-6 break-words empty:mt-0">
+        {mensajeListado(resultado, busqueda.nombre)}
+      </p>
       {resultado.estado === "sinSesion" && (
         <p className="feedback feedback-warning mt-6">
           <Link href="/login" className="underline">
@@ -201,72 +185,35 @@ export default function Pages() {
         </p>
       )}
       {resultado.estado === "error" && (
-        <p role="alert" className="feedback feedback-error mt-6">
-          No se pudieron cargar los pedidos. Pulsa Buscar para volver a
-          intentarlo.
-        </p>
+        <div className="mt-6">
+          <p role="alert" className="feedback feedback-error">
+            {busqueda.nombre
+              ? "No se pudo completar la búsqueda."
+              : "No se pudieron cargar los pedidos."}{" "}
+            Comprueba la conexión y vuelve a intentarlo.
+          </p>
+          <button
+            type="button"
+            className="button-secondary mt-3"
+            onClick={() => recargar()}
+          >
+            Reintentar
+          </button>
+        </div>
       )}
       {resultado.estado === "listo" && resultado.pedidos.length > 0 && (
-        <p role="status" className="mt-6">
-          Pedidos encontrados: {resultado.pedidos.length}.
-        </p>
+        <OrderList
+          pedidos={resultado.pedidos}
+          eliminando={eliminando}
+          onEditar={(pedido) => {
+            setMensaje("");
+            setErrorOperacion("");
+            ultimoEditado.current = pedido.id;
+            setEditando(pedido);
+          }}
+          onEliminar={eliminar}
+        />
       )}
-      {resultado.estado === "listo" &&
-        (resultado.pedidos.length === 0 ? (
-          <p role="status" className="mt-6">
-            {busqueda.nombre
-              ? "No hay pedidos que coincidan con la búsqueda."
-              : "Todavía no tienes pedidos."}
-          </p>
-        ) : (
-          <ul className="mt-6 space-y-4">
-            {resultado.pedidos.map((pedido) => (
-              <li key={pedido.id} className="surface p-6">
-                <h2 className="break-words text-lg font-semibold">
-                  {pedido.nombre}
-                </h2>
-                <p className="mt-2 break-words">
-                  Dominio deseado: {pedido.dominioDeseado}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <button
-                    id={`editar-pedido-${pedido.id}`}
-                    type="button"
-                    disabled={eliminando !== null}
-                    className="button-secondary"
-                    aria-label={`Editar pedido ${pedido.nombre}`}
-                    onClick={() => {
-                      setMensaje("");
-                      setErrorOperacion("");
-                      ultimoEditado.current = pedido.id;
-                      setEditando(pedido);
-                    }}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    type="button"
-                    disabled={eliminando !== null}
-                    className="button-secondary button-danger"
-                    aria-label={`Eliminar pedido ${pedido.nombre}`}
-                    onClick={() => eliminar(pedido)}
-                  >
-                    {eliminando === pedido.id ? "Eliminando…" : "Eliminar"}
-                  </button>
-                </div>
-                <p className="mt-2 whitespace-pre-wrap break-words">
-                  {pedido.descripcion}
-                </p>
-                <p className="mt-2">
-                  Servicios:{" "}
-                  {pedido.servicios
-                    .map((servicio) => servicio.nombre)
-                    .join(", ")}
-                </p>
-              </li>
-            ))}
-          </ul>
-        ))}
       <Link href="/comprar" className="mt-6 inline-block button-primary">
         Comprar página
       </Link>

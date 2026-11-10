@@ -24,7 +24,7 @@ const questions = [
   {
     title: "¿Cómo busco un pedido?",
     answer:
-      "En Mis pedidos, escribe todo o parte del nombre en Buscar por nombre del pedido y pulsa Buscar. La búsqueda admite mayúsculas y minúsculas. Para volver al listado completo, vacía el campo y pulsa Buscar otra vez. Si no hay coincidencias, aparecerá un mensaje.",
+      "En Mis pedidos, escribe todo o parte del nombre en Buscar por nombre del pedido y pulsa Buscar. La búsqueda admite mayúsculas y minúsculas y muestra cuántos pedidos coinciden. Pulsa Limpiar búsqueda para volver al listado completo. Si no hay coincidencias, prueba con otro nombre.",
   },
   {
     title: "¿Cómo modifico un pedido?",
@@ -44,7 +44,7 @@ const questions = [
   {
     title: "¿Qué hago si pierdo la conexión?",
     answer:
-      "Comprueba tu conexión. Cuando el navegador detecte que estás sin conexión, aparecerá un aviso. Si falla la carga de Mis pedidos, pulsa Buscar para volver a intentarlo. Si aparece un error al guardar o eliminar, consulta el listado cuando recuperes la conexión para comprobar si la operación se completó antes de repetirla.",
+      "Comprueba tu conexión. Cuando el navegador detecte que estás sin conexión, aparecerá un aviso. Si falla la carga o la búsqueda en Mis pedidos, pulsa Reintentar para repetir la última consulta. Si aparece un error al guardar o eliminar, consulta el listado cuando recuperes la conexión para comprobar si la operación se completó antes de repetirla.",
   },
 ];
 
